@@ -9,4 +9,5 @@ This repository provides the scripts used in the genetic study of childhood malt
 6. ABCD_GWAS.R - An R script for data QC etc in ABCD. At the end of the script is a line for running GWAS using FastGWA in ABCD, to be run on the terminal.
 7. ACE_pTDT.R - pTDT script for SSC and SFARI
 8. MR_scripts.R - TwosampleMR package based MR analyses
-9 Code_for_figs.R - R code to create some of the figures.
+
+9. Code_for_figs.R - R code to create some of the figures
