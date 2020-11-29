@@ -5,6 +5,8 @@
 
 ###Polygenic scores for childhood maltreatment in the UKB
 
+library(data.table)
+
 pheno = fread("~/UKB_v2/ACE_Psychiatry/ACEphenobolt.txt")
 covariates = fread("~/UKB_v2/ACE_Psychiatry/covarbolt.txt")
 pgs = fread("~/ALSPAC/PRSice2results/UKB2_autosomes_logchildtraumasum_wosiblings_v2.all.score")
@@ -67,6 +69,10 @@ summary(lm(scale(childtraumasum) ~  f.189.0.0 + f.34.0.0 + f.22000.0.0 + f.22001
 ###############################
 
 
+library(psych)
+library(nlme)
+library(boot)
+
 sibling_data <- fread("~/UKB_v2/ACE_Psychiatry/sibling_problem/rels/sibs_famid3",h=F, data.table=F, verbose=T) #41498
 setnames(sibling_data, old = c(1,2), new = c("IID","FID"))
 
@@ -81,14 +87,13 @@ pheno = pheno[,c("IID", "childtraumasum")]
 pgs = pgs[,c("IID", "1.000000")]
 setnames(pgs, 2, "pgs_trauma")
 
-dat2<-merge(pheno, b ,by = "IID")
+dat2<-merge(pheno, sibling_data ,by = "IID")
 
 finalsib1 <- merge(dat2, pgs, by='IID')
-covariates = covariates[-c("FID")]
+covariates = covariates[,-c("FID")]
 finalsib <- merge(finalsib1, covariates, by = "IID")
 
 finalsib$trauma_sc = scale(finalsib$childtraumasum)
-finalsib$log_childtraumasum_sc = scale(finalsib$log_childtraumasum)
 finalsib$trauma_pgs_scaled = scale(finalsib$pgs_trauma)
 
 
@@ -101,12 +106,6 @@ ICCest <- function(model) {
 }
 
 # intercept model
-m0 <- lme(log_childtraumasum_sc~1, random=~1|FID, method="ML", na.action=na.omit,data=finalsib)
-ICCest(m0) #get ICC #0.2807447
-
-m0 <- lme(trauma_sc~1, random=~1|FID, method="ML", na.action=na.omit,data=finalsib)
-ICCest(m0) #get ICC #0.321328
-
 m0 <- lme(trauma_sc~1, random=~1|FID, method="ML", na.action=na.omit,data=finalsib)
 ICCest(m0) #get ICC #0.321328
 
@@ -139,10 +138,7 @@ final <- lme((trauma_sc) ~ GPS_B_trauma + GPS_W_childtrauma +
                f.34.0.0 + f.22000.0.0 + f.22001.0.0 + f.22009.0.1 +
                f.22009.0.2 + f.22009.0.3 + f.22009.0.4 + f.22009.0.5 + f.22009.0.6 + f.22009.0.7 + f.22009.0.8 + 
                f.22009.0.9 + f.22009.0.10 + f.22009.0.11 + f.22009.0.12 + f.22009.0.13 + f.22009.0.14 + f.22009.0.15 +
-               f.22009.0.16 + f.22009.0.17 + f.22009.0.18 + f.22009.0.19 + f.22009.0.20 + f.22009.0.21 + f.22009.0.22 +
-               f.22009.0.23 + f.22009.0.24 + f.22009.0.25 + f.22009.0.26 + f.22009.0.27 + f.22009.0.28 + f.22009.0.29 + 
-               f.22009.0.30 + f.22009.0.31 + f.22009.0.32 + f.22009.0.33 + f.22009.0.34 + f.22009.0.35 + f.22009.0.36 + 
-               f.22009.0.37 + f.22009.0.38 + f.22009.0.39 + f.22009.0.40, random=~1|FID,  method="ML", na.action=na.omit,data=finalsib)
+               f.22009.0.16 + f.22009.0.17 + f.22009.0.18 + f.22009.0.19 + f.22009.0.20, random=~1|FID,  method="ML", na.action=na.omit,data=finalsib)
 
 summary(final)
 
@@ -246,11 +242,6 @@ Z_difftrauma <- difftrauma/SD_sampling_difftrauma
 
 
 P_difftrauma <- 2*pnorm(-abs(Z_difftrauma))
-P_diffnoncog <- 2*pnorm(-abs(Z_diffnoncog))
-P_diffratio <- 2*pnorm(-abs(Z_diffratio))
 
-compare <- cbind(Z_diffcog, P_diffcog, Z_diffnoncog, P_diffnoncog, Z_diffratio, P_diffratio)
-
-write.table(compare, "Ztests_sib_UKB_20200529.csv", row.names=T, quote=F)
 
 
