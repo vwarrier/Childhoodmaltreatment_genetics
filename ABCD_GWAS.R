@@ -68,6 +68,6 @@ write.table(pheno2, file = "~/ABCD/ABCDgenotype/GWAS/Childhood_trauma/trauma_phe
 write.table(qcovar[,-c("Age")], file = "~/ABCD/ABCDgenotype/GWAS/Childhood_trauma/qcovar_withoutage.txt", row.names = F, col.names = T, quote = F )
 
 
-###Run model
+###Run model directly on bash - including the script below for convenience (don't run it in R!)
 ./gcta64 --fastGWA-mlm --mbfile Fast_GWAS_pathfile.txt --grm-sparse sp_grm_european --pheno ./Childhood_trauma/ABCD_pheno_forGCTA.txt --mpheno 21  --qcovar ./Childhood_trauma/qcovar.txt --covar ./Childhood_trauma/covar.txt --threads 20 --out ./Childhood_trauma/trauma_all__rnknorm --maf 0.001 
 
