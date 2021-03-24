@@ -56,5 +56,5 @@ siblings_unique_ind_alphabet$IID = siblings_unique_ind_alphabet$FID
 
 write.table(siblings_unique_ind_alphabet, file = "~/UKB_v2/ACE_Psychiatry/sibling_problem/list_of_siblings_ACE.txt", row.names = F, col.names = T, quote = F )
 
-## 2849 sibling pairs with phenotype represnting 5515 individuals. 
+## 2849 sibling pairs with phenotype representing 5515 individuals. Run the command below directly in bash, not in R. 
 ./gcta64  --grm ace_siblingsonly_grm  --keep ~/UKB_v2/ACE_Psychiatry/sibling_problem/list_of_siblings_ACE.txt  --grm-cutoff  0.05  --make-grm  --out ace_siblingsonly_grm_unrelated --thread-num 15
